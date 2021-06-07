@@ -1,0 +1,287 @@
+openapi: 3.0.0
+info:
+  title: Kudosware Assignment
+  description: API DOCUMENTATION
+  version: 1.0.0
+servers:
+- url: https://kudosware.herokuapp.com/
+  description: Production server
+paths:
+  /get/{id}:
+    get:
+      tags:
+      - UserAcess
+      - AdminAcess
+      - ToDo
+      summary: get single ToDo item
+      operationId: getIdGET
+      parameters:
+      - name: id
+        in: path
+        description: primary key of activity
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "201":
+          description: Single ToDo Item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo'
+        "401":
+          description: Access token is missing or invalid
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: UserAcess
+  /getall:
+    get:
+      tags:
+      - UserAcess
+      - AdminAcess
+      - ToDo
+      summary: get single ToDo item
+      operationId: getallGET
+      responses:
+        "201":
+          description: Single ToDo Item
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/todo'
+                x-content-type: application/json
+        "401":
+          description: Access token is missing or invalid
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: UserAcess
+  /put/{id}:
+    put:
+      tags:
+      - AdminAcess
+      - ToDo
+      summary: Update single ToDo item
+      operationId: putIdPUT
+      parameters:
+      - name: id
+        in: path
+        description: id is primary key of todo item
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/todo'
+      responses:
+        "201":
+          description: updated todo item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo'
+        "401":
+          description: Access token is missing or invalid
+        "404":
+          description: The resource does not exist
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: AdminAcess
+  /delete/{id}:
+    delete:
+      tags:
+      - AdminAcess
+      - ToDo
+      summary: Delete a todo item.
+      operationId: deleteIdDELETE
+      parameters:
+      - name: id
+        in: path
+        description: id is primary key of the todo item
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Sucessfully Deleted
+        "401":
+          description: Access token is missing or invalid
+        "404":
+          description: The resource does not exist
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: AdminAcess
+  /create/{id}:
+    post:
+      tags:
+      - AdminAcess
+      - ToDo
+      summary: To create new todo Item.
+      operationId: createIdPOST
+      parameters:
+      - name: id
+        in: path
+        description: it can be any number
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/todo'
+      responses:
+        "201":
+          description: new todo item with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo'
+        "401":
+          description: Access token is missing or invalid
+        "404":
+          description: The resource does not exist
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: AdminAcess
+  /users/:
+    post:
+      tags:
+      - User
+      summary: To create new user or admin
+      operationId: usersPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/users_body'
+      responses:
+        "201":
+          description: new todo item with id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Access token is missing or invalid
+        "404":
+          description: The resource does not exist
+      x-swagger-router-controller: User
+  /users/login/:
+    post:
+      tags:
+      - User
+      summary: to login
+      operationId: usersLoginPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/users_login_body'
+      responses:
+        "201":
+          description: user description with token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Access token is missing or invalid
+        "404":
+          description: The resource does not exist
+      x-swagger-router-controller: User
+components:
+  schemas:
+    todo:
+      type: object
+      properties:
+        title:
+          type: string
+        sub_title:
+          type: string
+        due_date:
+          type: string
+          format: date
+      example:
+        sub_title: sub_title
+        due_date: 2000-01-23
+        title: title
+    user:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+          format: password
+        is_superuser:
+          type: boolean
+        created_on:
+          type: string
+          format: date-time
+        modified_by:
+          type: integer
+        modified_on:
+          type: string
+          format: date-time
+      example:
+        modified_on: 2000-01-23T04:56:07.000+00:00
+        password: ""
+        is_superuser: true
+        created_on: 2000-01-23T04:56:07.000+00:00
+        modified_by: 0
+        last_name: last_name
+        first_name: first_name
+        email: email
+    users_user:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        is_staff:
+          type: boolean
+    users_body:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/users_user'
+    userslogin_user:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    users_login_body:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/userslogin_user'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
